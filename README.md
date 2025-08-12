@@ -180,3 +180,37 @@ GROUP BY g.gizmo_id, g.name, ar.avg_rating, col.hex
 ORDER BY coalesce(ar.avg_rating, 0) DESC NULLS LAST, g.name
 LIMIT 20;
 ```
+
+## Fun questions
+
+- How many records to I have in each table? Disk space? Is this too many?
+- what is the most common color of gizmo?
+
+```text
+I've got a query and it's slow. can you give me some tips? don't do anything, just let me know what ideas you have
+
+WITH avg_reviews AS (
+  SELECT r.gizmo_id, avg(r.rating)::numeric(10,2) AS avg_rating
+  FROM public.gizmo_reviews r
+  GROUP BY r.gizmo_id
+)
+SELECT g.gizmo_id,
+       g.name,
+       ar.avg_rating,
+       array_agg(DISTINCT c.category_name ORDER BY c.category_name) AS categories,
+       g.metadata->>'color' AS color,
+       col.hex AS color_hex
+FROM public.gizmos g
+LEFT JOIN avg_reviews ar ON ar.gizmo_id = g.gizmo_id
+LEFT JOIN public.gizmo_categories gc ON gc.gizmo_id = g.gizmo_id
+LEFT JOIN public.categories c ON c.category_id = gc.category_id
+LEFT JOIN public.colors col ON (g.metadata->>'color') = col.color_name
+GROUP BY g.gizmo_id, g.name, ar.avg_rating, col.hex
+ORDER BY coalesce(ar.avg_rating, 0) DESC NULLS LAST, g.name
+```
+
+- Are any already there?
+
+- Can you create a SQL view that shows the z-scores of the price of my gizmos, so I can analyze the distribution? Even though this repo has the fixings to build up the database, don't get fooled - i want you to simply add the view to the database. Go ahead and create a new folder called 'views' too and drop the source in there pls. name it up.sql like a migration and make me a down one too. k thx bye
+
+- Look into my data and give me insights about it. What patterns are there?
