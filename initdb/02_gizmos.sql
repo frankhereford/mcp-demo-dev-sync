@@ -22,3 +22,41 @@ CREATE TABLE IF NOT EXISTS public.gizmos (
     updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+-- Simple one-to-many table joined by gizmo_id
+CREATE TABLE IF NOT EXISTS public.gizmo_reviews (
+    review_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    gizmo_id uuid NOT NULL
+    REFERENCES public.gizmos (gizmo_id)
+    ON DELETE CASCADE,
+    reviewer_name text,
+    rating smallint CHECK (rating BETWEEN 1 AND 5),
+    comment text,
+    created_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Many-to-many via intermediate table
+CREATE TABLE IF NOT EXISTS public.categories (
+    category_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    category_name text NOT NULL UNIQUE,
+    description text
+);
+
+CREATE TABLE IF NOT EXISTS public.gizmo_categories (
+    gizmo_id uuid NOT NULL
+    REFERENCES public.gizmos (gizmo_id)
+    ON DELETE CASCADE,
+    category_id uuid NOT NULL
+    REFERENCES public.categories (category_id)
+    ON DELETE CASCADE,
+    added_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (gizmo_id, category_id)
+);
+
+-- Table intended to be joined via a JSON operator against gizmos.metadata
+-- Join example: ... ON (g.metadata->>'color') = c.color_name
+CREATE TABLE IF NOT EXISTS public.colors (
+    color_name text PRIMARY KEY,
+    hex text
+);
+
+-- end of schema
