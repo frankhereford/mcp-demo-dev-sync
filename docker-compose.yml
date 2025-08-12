@@ -60,5 +60,21 @@ services:
     tty: true
     command: ["psql"]
 
+  gizmo-loader:
+    build:
+      context: ./loader
+      dockerfile: Dockerfile
+    image: gizmo-loader:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      PGDATABASE: ${POSTGRES_DB:-frank}
+      PGPORT: 5432
+    entrypoint: ["python", "-u", "/app/load_gizmos.py"]
+
 volumes:
   postgres_data:
