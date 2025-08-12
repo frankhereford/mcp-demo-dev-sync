@@ -1,5 +1,7 @@
 ## Test MCP Postgres Pro
 
+Open source repo found here: https://github.com/crystaldba/postgres-mcp
+
 This project runs a PostgreSQL 17 instance with useful extensions, plus a Python-based data loader for generating fake data into a `gizmos` table and related tables for join demos.
 
 ### What's included
