@@ -1,4 +1,4 @@
-## Test MCP Postgres Pro
+## Demo an MCP - Postgres Pro
 
 Open source repo found here: https://github.com/crystaldba/postgres-mcp
 
