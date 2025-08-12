@@ -32,6 +32,20 @@ services:
       timeout: 5s
       retries: 5
 
+  mcp:
+    image: crystaldba/postgres-mcp:latest
+    container_name: postgres-mcp
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URI: "postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-frank}"
+      # OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+    command: ["--access-mode=unrestricted", "--transport=sse"]
+    ports:
+      - "${MCP_PORT:-8000}:8000"
+
   psql:
     image: postgres17-extended:latest
     depends_on:
